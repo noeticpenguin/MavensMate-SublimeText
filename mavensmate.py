@@ -1031,8 +1031,12 @@ class MavensMateCompletions(sublime_plugin.EventListener):
                 object_name_lower = parts[0]
                 object_name_lower = object_name_lower[::-1] #=> reverses line
                 if "this." in object_name_lower: continue
-                object_name_lower = re.sub(r'\W+', '', object_name_lower) #remove non alphanumeric chars
+                
+                if object_name_lower.startswith('system.'):
+                    object_name_lower = object_name_lower.replace('system.', '')
 
+                object_name_lower = re.sub(r'\W+', '', object_name_lower) #remove non alphanumeric chars
+                    
                 #print "our object: " + object_name_lower
 
                 if object_name_lower in apex_reserved.keywords: continue
@@ -1051,9 +1055,10 @@ class MavensMateCompletions(sublime_plugin.EventListener):
                 json_data = open(mm_dir+"/support/lib/apex/"+object_name_lower+".json")
                 data = json.load(json_data)
                 json_data.close()
-                pd = data["instance_methods"]
-                for method in pd:
-                    _completions.append((method, method))
+                if 'instance_methods' in data:
+                    pd = data["instance_methods"]
+                    for method in pd:
+                        _completions.append((method, method))
                 return sorted(_completions)
             elif os.path.isfile(util.mm_project_directory()+"/config/objects/"+object_name_lower+".object"): #=> object fields
                 object_dom = parse(util.mm_project_directory()+"/config/objects/"+object_name_lower+".object")
