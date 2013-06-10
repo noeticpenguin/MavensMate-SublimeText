@@ -908,9 +908,10 @@ class MavensMateCompletions(sublime_plugin.EventListener):
             json_data = open(mm_dir+"/support/lib/apex/"+lower_prefix+".json")
             data = json.load(json_data)
             json_data.close()
-            pd = data["static_methods"]
-            for method in pd:
-                _completions.append((method, method))
+            if "static_methods" in data:
+                pd = data["static_methods"]
+                for method in pd:
+                    _completions.append((method, method))
             return sorted(_completions)
         
         ## HANDLE CUSTOM APEX CLASS STATIC METHODS (MyCustomClass.some_static_method)
@@ -939,7 +940,7 @@ class MavensMateCompletions(sublime_plugin.EventListener):
                 if line_contents.startswith(word+"."): continue #skip line if the variable starts it with assignment
 
                 import re
-                pattern = "'(.* "+word+" .*)'"
+                pattern = "'(.*? "+word+" .*?)'"
                 m = re.search(pattern, line_contents)
                 if m != None: 
                     #print 'skipping because word found inside string'
@@ -951,22 +952,35 @@ class MavensMateCompletions(sublime_plugin.EventListener):
                     #print 'skipping because word found inside exact string'
                     continue #skip if we match our word, in an exact Apex string
 
-                pattern = re.compile("(system.debug.*\(.*"+word+")", re.IGNORECASE)
+                pattern = re.compile("(system.debug.*\(.*?"+word+")", re.IGNORECASE)
                 m = re.search(pattern, line_contents)
                 if m != None: 
                     #print 'skipping because word found inside system.debug'
                     continue #skip if we match our word inside system.debug
 
-                #STILL NEED TO WORK ON THIS
-                #String bat;
-                #foo.bar(foo, bar, bat)
-                #bat. #=> this will be found in the parens above
-                #for (Opportunity o : opps)
-                pattern = re.compile("\(%s\)" % word, re.IGNORECASE)
-                m = re.search(pattern, line_contents)
-                if m != None: 
-                    #print 'skipping because word found inside parens'
-                    continue #skip if we match our word inside parens                
+                # skip where the variable is on the right side of the equals
+                pattern = re.compile("\=.*?\b%s\b" % word, re.IGNORECASE))
+                if re.search(pattern, line_contents) != None:
+                    continue;
+
+                # is this embedded in a SOQL statement?
+                pattern = re.compile("\:%s\b" % word, re.IGNORECASE))
+                if re.search(pattern, line_contents) != None:
+                    continue;
+
+                # don't check parens if it's the parent method
+                pattern = re.compile("^(public|protected|private|static|webservice) ", re.IGNORECASE)
+                if re.search(pattern, line_contents) == None:
+                    # is the work in parens?
+                    pattern = re.compile("\(.*?%s.*?\)" % word, re.IGNORECASE)
+                    if re.search(pattern, line_contents) != None:
+                        # only allow if the word is on the left of an equals or colon
+                        pattern = re.compile("%s.*?(\:|\=)" % word, re.IGNORECASE)
+                        if re.search(pattern, line_contents) == None:
+                            continue
+                    else:
+                        # not in parens
+                        pass        
 
                 #TODO: figure out a way to use word boundaries here to handle
                 #for (Opportunity o: opps) {
@@ -1030,12 +1044,12 @@ class MavensMateCompletions(sublime_plugin.EventListener):
                 parts = object_name_lower.split(" ")
                 object_name_lower = parts[0]
                 object_name_lower = object_name_lower[::-1] #=> reverses line
-                if "this." in object_name_lower: continue
+                if object_name_lower.startswith("this."): continue
                 
                 if object_name_lower.startswith('system.'):
                     object_name_lower = object_name_lower.replace('system.', '')
 
-                object_name_lower = re.sub(r'\W+', '', object_name_lower) #remove non alphanumeric chars
+                object_name_lower = re.sub(r'[^a-z0-9]', '', object_name_lower) #remove non alphanumeric chars
                     
                 #print "our object: " + object_name_lower
 
