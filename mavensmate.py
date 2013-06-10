@@ -959,12 +959,12 @@ class MavensMateCompletions(sublime_plugin.EventListener):
                     continue #skip if we match our word inside system.debug
 
                 # skip where the variable is on the right side of the equals
-                pattern = re.compile("\=.*?\b%s\b" % word, re.IGNORECASE))
+                pattern = re.compile("\=.*?\b%s\b" % word, re.IGNORECASE)
                 if re.search(pattern, line_contents) != None:
                     continue;
 
                 # is this embedded in a SOQL statement?
-                pattern = re.compile("\:%s\b" % word, re.IGNORECASE))
+                pattern = re.compile("\:%s\b" % word, re.IGNORECASE)
                 if re.search(pattern, line_contents) != None:
                     continue;
 
