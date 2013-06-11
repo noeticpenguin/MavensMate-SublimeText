@@ -37,6 +37,7 @@
     "RestResponse",
     "RestRequest",
     "PageReference",
+    "Trigger",
     "Version"
   ]
 }
