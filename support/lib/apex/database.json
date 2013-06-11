@@ -28,9 +28,14 @@
     "upsert(sObject_recordToUpdate, Schema_SObjectField_External_ID_Field, Boolean_opt_allOrNone)",
     "upsert(sObject[]_recordsToUpdate, Schema_SObjectField_External_ID_Field, Boolean_opt_allOrNone)",
 
-    // Subclasses
-    "Error",
+    "QueryLocator",
+    "LeadConvert",
+    "LeadConvertResult",
+    "SaveResult",
+    "UpsertResult",
+    "DeleteResult",
+    "UndeleteResult",
     "EmptyRecycleBinResult",
-    "QueryLocator"
+    "Error"
   ]
 }

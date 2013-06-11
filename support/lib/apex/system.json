@@ -38,6 +38,30 @@
     "RestRequest",
     "PageReference",
     "Trigger",
-    "Version"
+    "Version",
+
+    "Exception",
+    "AsyncException",
+    "CalloutException",
+    "DmlException",
+    "EmailException",
+    "InvalidParameterValueException",
+    "JSONException",
+    "ListException",
+    "MathException",
+    "NoAccessException",
+    "NoDataFoundException",
+    "NoSuchElementException",
+    "NullPointerException",
+    "QueryException",
+    "RequiredFeatureMissing",
+    "SearchException",
+    "SecurityException",
+    "SerializationException",
+    "SObjectException",
+    "StringException",
+    "TypeException",
+    "VisualforceException",
+    "XmlException"
   ]
 }
